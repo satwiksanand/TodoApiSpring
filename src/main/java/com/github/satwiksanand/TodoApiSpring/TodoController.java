@@ -1,5 +1,7 @@
 package com.github.satwiksanand.TodoApiSpring;
 
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +45,22 @@ public class TodoController {
 
     @PostMapping("/todos")
     public Todo createTodo(@RequestBody Todo newTodo){
+        /*
+        * we can use @ResponseStatus(HttpStatus.CREATED) annotation to actually denote that
+        * the status code is 201 which is the rest convention for a successful created api call.
+        *
+        * if you want to manually maintain the response body, you can use something called the
+        * ResponseEntity<T> as well, notice the similarity with generics in typescript.
+        * */
         todoList.add(newTodo);
         return newTodo;
     }
+
+//    here is an implementation of using that ResponseEntity
+//    do not forget to comment out the imports before using this lol.
+//        @PostMapping("/todos")
+//        public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo){
+//            todoList.add(newTodo);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
+//        }
 }
