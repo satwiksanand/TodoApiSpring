@@ -2,10 +2,9 @@ package com.github.satwiksanand.TodoApiSpring;
 
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.List;
 //response body.
 
 @RestController
+@RequestMapping("/api/v1/todos")
 public class TodoController {
 
     private static List<Todo> todoList;
@@ -38,12 +38,12 @@ public class TodoController {
         todoList.add(new Todo(2, true, "Todo 2", 2));
     }
 
-    @GetMapping("/todos")
+    @GetMapping
     public List<Todo> getTodoList(){
         return todoList;
     }
 
-    @PostMapping("/todos")
+    @PostMapping
     public Todo createTodo(@RequestBody Todo newTodo){
         /*
         * we can use @ResponseStatus(HttpStatus.CREATED) annotation to actually denote that
@@ -63,4 +63,44 @@ public class TodoController {
 //            todoList.add(newTodo);
 //            return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
 //        }
+
+    @GetMapping("/{todoId}")
+    public ResponseEntity<?> getTodoById(@PathVariable Long todoId){
+        for(Todo todo : todoList){
+            if(todo.getId() == todoId){
+                return ResponseEntity.ok(todo);
+            }
+        }
+        MessageBody newMessage = new MessageBody(404, "No Such todo found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(newMessage);
+    }
+
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<?> deleteTodoById(@PathVariable Long todoId){
+        boolean found = false;
+        int ind = -1;
+        for(int i = 0; i < todoList.size(); ++i)
+        {
+            if(todoList.get(i).getId() == todoId){
+                ind = i;
+                found = true;
+            }
+        }
+        todoList.remove(ind);
+        MessageBody newMessage = new MessageBody((found ? 200 : 404), (found ? "Deleted todo" : "Not found"));
+        return ResponseEntity.status(found ? HttpStatus.OK : HttpStatus.NOT_FOUND).body(newMessage);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Todo> patchTodoById(@RequestBody Todo newTodo) {
+        int size = todoList.size();
+        for(int i = 0; i < size; ++i){
+            if(todoList.get(i).getId() == newTodo.getId()){
+                todoList.get(i).setTitle(newTodo.getTitle());
+                todoList.get(i).setCompleted(newTodo.isCompleted());
+                todoList.get(i).setUserId(newTodo.getUserId());
+            }
+        }
+        return ResponseEntity.ok(newTodo);
+    }
 }
