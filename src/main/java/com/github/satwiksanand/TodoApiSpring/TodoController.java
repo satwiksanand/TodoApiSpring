@@ -38,9 +38,23 @@ public class TodoController {
         todoList.add(new Todo(2, true, "Todo 2", 2));
     }
 
+    //modifying the getTodoList function to return filtered data as well.
     @GetMapping
-    public List<Todo> getTodoList(){
-        return todoList;
+    public List<Todo> getTodoList(@RequestParam(required = false) Boolean isCompleted, @RequestParam(required = false) Integer userId){
+        List<Todo> newTodoList = new ArrayList<>();
+        for(Todo todo : todoList){
+            boolean matches = true;
+            if(isCompleted != null){
+                matches = (todo.isCompleted() == isCompleted);
+            }
+            if(userId != null){
+                matches = matches && (todo.getUserId() == userId);
+            }
+            if(matches){
+                newTodoList.add(todo);
+            }
+        }
+        return newTodoList;
     }
 
     @PostMapping
