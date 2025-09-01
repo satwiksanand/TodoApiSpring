@@ -39,6 +39,7 @@ public class TodoController {
     }
 
     //modifying the getTodoList function to return filtered data as well.
+    @TimeMonitor
     @GetMapping
     public List<Todo> getTodoList(@RequestParam(required = false) Boolean isCompleted, @RequestParam(required = false) Integer userId){
         List<Todo> newTodoList = new ArrayList<>();
